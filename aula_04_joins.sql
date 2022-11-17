@@ -111,7 +111,7 @@ codigo  nome_prod   valor_unit_ped  qtd     valor_total_item
 
 
 -- ME MOSTRA todos os produtos que foram pedidos, 
--- a qtd, o valor_unit e a soma de cada item, mostra o nome da catega
+-- a qtd, o valor_unit e a soma de cada item, mostra o nome da categoria
 
 select  pd.id as codigo, pd.descricao as nome_prod, 
         pi.valor_unit as valor_unit_ped,
@@ -130,7 +130,7 @@ codigo  nome_prod   valor_unit_ped  qtd     valor_total_item    categoria
 
 
 -- ME MOSTRA todos os produtos que foram pedidos, 
--- a qtd, o valor_unit e a soma de cada item, mostra o nome da catega e também
+-- a qtd, o valor_unit e a soma de cada item, mostra o nome da categoria e também
 -- quer saber o nome do cliente que pediu cada produto que será listado
 
 select  pd.id as codigo, pd.descricao as nome_prod, 
@@ -146,7 +146,7 @@ from    produtos pd
             inner join pedidos p
                 ON p.id = pi.id_pedido
             inner join clientes cli
-                ON c.id = cli.id_cliente
+                ON cli.id = p.id_cliente
 
 
 codigo  nome_prod   valor_unit_ped  qtd     valor_total_item    categoria  nome_do_cliente_que_pediu
