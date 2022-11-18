@@ -150,3 +150,45 @@ from    produtos pd
 
 
 codigo  nome_prod   valor_unit_ped  qtd     valor_total_item    categoria  nome_do_cliente_que_pediu
+
+
+--  me mostra todos os produtos e os que tem pedidos, me mostre o código do pedido.
+select  p.id, p.descricao, p.valor_unit, pi.id_pedido 
+from    produtos p 
+            left join pedidos_itens pi
+                on pi.id_produto = p.id
+
+
+--listar todos os produtoso que nunca foram pedidos
+
+select  p.id, p.descricao, p.valor_unit, pi.id_pedido 
+from    produtos p 
+            left join pedidos_itens pi
+                on pi.id_produto = p.id
+where   pi.id_produto is null
+
+select  p.id, p.descricao, p.valor_unit, pi.id_pedido 
+from    produtos p 
+            right join pedidos_itens pi
+                on pi.id_produto = p.id
+
+elect  p.id, p.descricao, p.valor_unit, pi.id_pedido 
+from    pedidos_itens pi
+            right join produtos p
+                on pi.id_produto = p.id
+
+
+
+            from     pedidos_itens pi full join produtos  p
+                        on pi.id_produto = p.id 
+            where   p.id is null
+
+            from     pedidos_itens pi full join produtos  p
+                        on pi.id_produto = p.id 
+            where   pi.id_pedido is null
+
+                        from     pedidos_itens pi full join produtos  p
+                        on pi.id_produto = p.id 
+            where       pi.id_pedido is not null and p.id is not null
+
+
