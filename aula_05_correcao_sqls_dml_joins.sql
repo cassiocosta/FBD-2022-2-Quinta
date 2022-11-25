@@ -75,7 +75,6 @@ delete
 from 	livros 
 where 	titulo like 'BANCO_ DE DADO_ DISTRIBUÍDO_'
 
-
 -- d
 -- Selecione o nome e o CPF de todos os autores que nasceram após 01 de janeiro de 1990.
 
@@ -96,13 +95,17 @@ where   endereco like '%rio de janeiro%';
 update livros set preco = 0
 where 	data_lancamento is null or preco<55
 
-
 -- g
 -- Exclua todos os livros onde o 
 -- assunto for diferente de ‘S’, ‘P’, ou ‘B’.
 delete 
 from livros 
 where assunto_id<>'P' and  assunto_id<>'B' and assunto_id<>'S'
+
+delete 
+from livros 
+where    assunto_id not in('B','P','S')
+
 
 select *
 from livros 
@@ -114,3 +117,179 @@ where assunto_id not in('P','B')
 -- são os autores cadastrados na tabela AUTORES.
 select count(id) as quantos
 from autores 
+
+--i
+/*
+
+Escreva o comando que apresenta qual o número médio de autores de cada livro.
+ Você deve utilizar, novamente, a tabela AUTOR_LIVRO. 
+
+*/
+
+Select avg(quantos) as media_autores_por_livro
+from (
+	select livro_id, count(autor_id) as quantos
+	from autores_livros
+	group by livro_id
+) as nova_consulta
+where media_autores_por_livro>3
+
+
+--j
+/*
+Apresente o comando SQL para gerar uma listagem dos 
+códigos dos livros que possuem a menos dois autores.
+
+*/
+    select livro_id, count(autor_id) as quantos
+	from autores_livros
+	group by livro_id
+    having quantos>=2
+
+/*
+k
+Escreva o comando para apresentar o preço médio dos livros por código de editora. 
+Considere somente aqueles que custam mais de R$ 45,00.
+
+*/
+
+-- Escreva o comando para apresentar o preço médio dos livros por código de editora. 
+-- Considere somente aqueles que custam mais de R$ 45,00
+select editora_id, avg(preco) as media_por_editora
+from 	livros
+where 	preco>45
+group by editora_id
+
+/*
+l
+Apresente o preço máximo, o preço mínimo e o preço médio dos livros cujos assuntos
+ são ‘S’ ou ‘P’ ou ‘B’, para cada código de editora.
+
+ */
+
+ select editora_id, min(preco) as minimo, max(preco) as maximo, avg(preco) as media
+from 	livros
+where assunto_id in('S','P','B')
+group by editora_id
+
+/*
+
+Altere o comando do exercício anterior para só considerar os livros que 
+já foram lançados (data de lançamento inferior a data atual) e cujo o preço máximo é inferior
+a R$ 100,00.
+
+*/
+
+select editora_id, min(preco) as minimo, max(preco) as maximo, avg(preco) as media
+from 	livros
+where assunto_id in('S','P','B') and data_lancamento < current_date
+group by editora_id
+having maximo<100
+
+/*
+4
+a
+
+Estão sendo estudados aumentos nos preços dos livros. 
+Escreva o comando SQL que retorna uma listagem contendo o titulo dos livros, 
+e mais três colunas: uma contendo os preços dos 
+livros acrescidos de 10% (deve ser chamada de ‘Opção_1’), 
+a segunda contendo os preços acrescidos de 15% (deve ser chamada de ‘Opção_2’) e
+ a terceira contendo os preços dos livros acrescidos de 20% (deve ser chamada de ‘Opção_3’). 
+ Somente devem ser considerados livros que já tenham sido lançados.
+
+*/
+SELECT l.titulo, l.preco * 1.10 as Opção_1, 
+		l.preco * 1.15 as Opção_2, 
+        l.preco * 1.20 as Opção_3
+from livros l 
+where lancamento < CURRENT_DATE;
+
+/*
+b
+Escreva o comando SQL que apresenta uma listagem contendo o código da editora,
+ o nome da editora, a sigla do assunto e o título dos livros que já foram lançados.
+  Os dados devem estar em ordem decrescente de preço, e ascendente de código da editora 
+  e de título do livro.
+
+
+*/
+
+SELECT e.id, e.nome, l.assunto_id, l.titulo, l.preco
+from livros l 
+        inner join editoras e ON e.id = l.editora_id
+where l.data_lancamento < CURRENT_DATE
+order by l.preco DESC, e.id ASC, l.titulo ASC
+
+
+/*
+c
+Escreva o comando SQL que apresenta uma listagem contendo o código da editora,
+Escreva o comando que apresente uma listagem dos nomes dos autores e do 
+seu ano e mês de nascimento, para os autores brasileiros e que tem livros ainda não 
+lançados. A listagem deve estar ordenada em ordem crescente de nome.
+
+
+
+*/
+SELECT a.nome, year(a.data_nasc) as ano, month(a.data_nasc) as mes, day(a.data_nasc) as dia
+from livros l 
+		inner join autores_livros al on al.livro_id = l.id
+        inner join autores a on a.id = al.autor_id
+
+where l.data_lancamento > CURRENT_DATE and l.data_lancamento is null
+order by a.nome ASC
+
+
+/*
+d
+Escreva o comando que retorna o nome dos autores e o título dos livros de sua autoria. 
+A listagem deve estar ordenada pelo nome do autor, mostrar somente os livros já lançados.
+
+
+
+
+*/
+SELECT a.nome as autor, l.titulo as titulo_do_livro
+from livros l 
+		inner join autores_livros al on al.livro_id = l.id
+        inner join autores a on a.id = al.autor_id
+
+where l.data_lancamento <CURRENT_DATE and l.data_lancamento is not null
+order by a.nome ASC
+
+
+
+
+/*
+e
+Monte a consulta SQL que retorna as editoras que publicaram livros escritos pela autora
+ 'Ana da Silva'
+*/
+SELECT e.id, e.nome
+from  livros l 
+		inner join autores_livros al on al.livro_id = l.id
+        inner join autores a on a.id = al.autor_id
+        inner join editoras e ON e.id = l.editora_id
+where l.data_lancamento < CURRENT_DATE and a.nome like '%ana da silva%'
+
+
+/*
+f
+FUS que apresente o CPF, nome do autor e o preço máximo dos livros de sua autoria. 
+Apresente somente as informações para os autores cujo preço máximo for superior a 50.
+*/
+SELECT a.nome, l.titulo, max(l.preco) as maximo
+from  livros l 
+		inner join autores_livros al on al.livro_id = l.id
+        inner join autores a on a.id = al.autor_id
+group by a.nome, l.titulo
+having maximo>50
+
+
+
+
+
+
+
+
